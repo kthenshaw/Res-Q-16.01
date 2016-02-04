@@ -31,14 +31,20 @@ public class BlueTeleop  extends OpMode {
 
     Servo blueClimb;
     Servo redClimb;
-    Servo allClear;
+    Servo blueRESQ;
+    Servo redRESQ;
+    Servo redDump;
 
     double redOpen = .88;
     double redClosed = .3;
     double blueOpen = .3;
     double blueClosed = .88 ;
-    double allClearHit = .05;
-    double allClearOpen = .95;
+    double bResQStart = 1;
+    double bRESQDrop = .01;
+    double rRESQStart = .05;
+    double rRESQDrop = .95;
+    double rDumpStart = 0;
+    double rDumpDrop = .95;
 
     @Override
     public void init()
@@ -50,7 +56,9 @@ public class BlueTeleop  extends OpMode {
         slideBot = hardwareMap.dcMotor.get("slideBot");
         blueClimb = hardwareMap.servo.get("blueClimb");
         redClimb = hardwareMap.servo.get("redClimb");
-        allClear = hardwareMap.servo.get("allClear");
+        blueRESQ = hardwareMap.servo.get("blueRESQ");
+        redRESQ = hardwareMap.servo.get("redRESQ");
+        redDump = hardwareMap.servo.get("redDump");
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
         //leftDrive.setDirection(DcMotor.Direction.REVERSE);
         TeleopTank = new TeleopTank(hardwareMap.dcMotor.get("left_drive"),hardwareMap.dcMotor.get("right_drive"));
@@ -59,7 +67,8 @@ public class BlueTeleop  extends OpMode {
         //sets initial servo positions
         blueClimb.setPosition(blueClosed);
         redClimb.setPosition(redClosed);
-        allClear.setPosition(allClearOpen);
+        blueRESQ.setPosition(bResQStart);
+        redRESQ.setPosition(rRESQStart);
     }
 
     @Override
@@ -91,5 +100,12 @@ public class BlueTeleop  extends OpMode {
         //Controller2.assignServo(redClimb,gamepad2.y,redOpen);
         //Controller2.assignServo(redClimb,gamepad2.a,redClosed);
 
+        //Sets the climber arm to allow for corrections if the autonomous fails
+        Controller2.assignServo(blueRESQ,gamepad1.a,bResQStart);
+        Controller2.assignServo(blueRESQ,gamepad1.y,bRESQDrop);
+        Controller2.assignServo(redRESQ,gamepad1.dpad_down,rRESQStart);
+        Controller2.assignServo(redRESQ, gamepad1.dpad_up,rRESQDrop);
+        Controller2.assignServo(redDump,gamepad1.dpad_left,rRESQStart);
+        Controller2.assignServo(redDump,gamepad1.dpad_right,rDumpDrop);
     }
 }

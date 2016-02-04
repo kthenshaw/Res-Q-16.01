@@ -5,7 +5,6 @@ import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 
-import java.util.concurrent.locks.Lock;
 
 /**
  * Created by Owner on 8/31/2015.
@@ -17,10 +16,6 @@ public class IMUTest extends OpMode {
     //The following arrays contain both the Euler angles reported by the IMU (indices = 0) AND the
     // Tait-Bryan angles calculated from the 4 components of the quaternion vector (indices = 1)
     volatile double[] rollAngle = new double[2], pitchAngle = new double[2], yawAngle = new double[2];
-    short thunderA;
-    short thunderB;
-    short thunderC;
-    //comments//
 
     long systemTime;//Relevant values of System.nanoTime
 
@@ -28,7 +23,6 @@ public class IMUTest extends OpMode {
      * The following method was introduced in the 3 August 2015 FTC SDK beta release and it runs
      * before "start" runs.
      */
-
     @Override
     public void init() {
         systemTime = System.nanoTime();
@@ -40,7 +34,7 @@ public class IMUTest extends OpMode {
 
                     , (byte)(AdafruitIMU.BNO055_ADDRESS_A * 2)//By convention the FTC SDK always does 8-bit I2C bus
                     //addressing
-                    , (byte)AdafruitIMU.OPERATION_MODE_ACCGYRO);
+                    , (byte)AdafruitIMU.OPERATION_MODE_IMU);
         } catch (RobotCoreException e){
             Log.i("FtcRobotController", "Exception: " + e.getMessage());
         }
@@ -91,26 +85,31 @@ public class IMUTest extends OpMode {
         // write the values computed by the "worker" threads to the motors (if any)
 
         //Read the encoder values that the "worker" threads will use in their computations
-        boschBNO055.getAccel(thunderA, thunderB, thunderC);
+        boschBNO055.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
 		/*
 		 * Send whatever telemetry data you want back to driver station.
 		 */
         //telemetry.addData("Text", "*** Robot Data***");
-        telemetry.addData("ThunderA: ", thunderA);
-        telemetry.addData("ThunderB: ",thunderB);
-        telemetry.addData("ThunderC: ", thunderC);    }
+        telemetry.addData("Headings(yaw): ",
+                String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+        telemetry.addData("Pitches: ",
+                String.format("Euler= %4.5f, Quaternion calculated= %4.5f", pitchAngle[0], pitchAngle[1]));
+        telemetry.addData("Max I2C read interval: ",
+                String.format("%4.4f ms. Average interval: %4.4f ms.", boschBNO055.maxReadInterval
+                        , boschBNO055.avgReadInterval));
+    }
 
     /*
     * Code to run when the op mode is first disabled goes here
     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#stop()
     */
-    // @Override
-    //public void stop() {
-    //When the FTC Driver Station's "Start with Timer" button commands autonomous mode to start,
-    //then stop after 30 seconds, stop the motors immediately!
-    //Following this method, the underlying FTC system will call a "stop" routine of its own
-    //  systemTime = System.nanoTime();
-    // Log.i("FtcRobotController", "IMU Stop method finished in: "
-    //       + (-(systemTime - (systemTime = System.nanoTime()))) + " ns.");
-    //}
+    @Override
+    public void stop() {
+        //When the FTC Driver Station's "Start with Timer" button commands autonomous mode to start,
+        //then stop after 30 seconds, stop the motors immediately!
+        //Following this method, the underlying FTC system will call a "stop" routine of its own
+        systemTime = System.nanoTime();
+        Log.i("FtcRobotController", "IMU Stop method finished in: "
+                + (-(systemTime - (systemTime = System.nanoTime()))) + " ns.");
+    }
 }

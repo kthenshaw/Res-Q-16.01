@@ -30,14 +30,12 @@ public class RedTeleop  extends OpMode {
 
     Servo blueClimb;
     Servo redClimb;
-    Servo allClear;
 
     double redOpen = .88;
     double redClosed = .3;
     double blueOpen = .3;
     double blueClosed = .88 ;
-    double allClearHit = .05;
-    double allClearOpen = .95;
+
 
     @Override
     public void init()

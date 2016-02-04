@@ -56,6 +56,10 @@ public class FtcOpModeRegister implements OpModeRegister {
      */
 
     manager.register("NullOp", NullOp.class);
-
+    manager.register("Red Teleop", RedTeleop.class);
+    manager.register("Blue Teleop", BlueTeleop.class);
+    manager.register("Ramp Clear", RampClear.class);
+    manager.register("TestingEncoders", TestingEncoders.class);
+    manager.register("IMU Test", IMUTest.class);
   }
 }
